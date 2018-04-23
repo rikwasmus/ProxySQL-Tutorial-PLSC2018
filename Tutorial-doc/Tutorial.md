@@ -194,6 +194,31 @@ SELECT id, sensitive_number FROM customer;
 
 ## Mirror queries
 
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,mirror_flagOUT,apply) VALUES (4,1,'^insert into customer(.*)',5,1);
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,replace_pattern,flagIN,apply) VALUES (5,1,'^insert into customer(.*)',"INSERT INTO perconalive.audit (`user_name`, `table_name`) VALUES (USER(), 'customer')",5,1);
+
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+```
+
+```
+mysql -uroot -proot -h127.0.0.1 -P16033
+use perconalive
+INSERT INTO customer VALUES (NULL, '987-65-4321');
+
+SELECT * FROM customer;
+SELECT * FROM audit;
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+SELECT * FROM stats_mysql_query_rules;
+
+SELECT hostgroup, digest_text, count_star FROM stats_mysql_query_digest;
+```
+
 
 ## MySQL failover with Orchestrator
 

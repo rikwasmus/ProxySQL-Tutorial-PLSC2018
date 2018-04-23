@@ -12,7 +12,8 @@ SAVE MYSQL QUERY RULES TO DISK;
 
 # query rules for mirroring
 DELETE FROM mysql_query_rules WHERE rule_id=4;
-INSERT INTO mysql_query_rules (rule_id,active,match_pattern,replace_pattern,mirror_flagOUT,apply) VALUES (4,1,'^insert into customer(.*)',"INSERT INTO perconalive.audit (`user_name`, `table_name`) VALUES (USER(), 'customer')",0,1);
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,mirror_flagOUT,apply) VALUES (4,1,'^insert into customer(.*)',5,1);
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,replace_pattern,flagIN,apply) VALUES (5,1,'^insert into customer(.*)',"INSERT INTO perconalive.audit (`user_name`, `table_name`) VALUES (USER(), 'customer')",5,1);
 
 LOAD MYSQL QUERY RULES TO RUNTIME;
 SAVE MYSQL QUERY RULES TO DISK;
