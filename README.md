@@ -45,6 +45,50 @@ Note that you'll want the following pre-requisites installed on your host machin
 - sysbench (1.0.12+ recommended if benchmarking)
 - orchestrator-client (3.0.8+ recommended if administering Orchestrator via CLI)
 
+**Step-by-step instructions to install dependencies.**
+
+On Ubuntu Xenial:
+```
+apt-get remove docker docker-engine docker.io
+apt-get install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+apt-get update
+apt-get install docker-ce jq mysql-client-5.7 docker-compose sysbench git
+wget https://github.com/github/orchestrator/releases/download/v3.0.10/orchestrator-client_3.0.10_amd64.deb
+dpkg -i orchestrator-client_3.0.10_amd64.deb
+
+git clone https://github.com/renecannao/ProxySQL-Tutorial-PLSC2018.git
+cd ProxySQL-Tutorial-PLSC2018
+./docker-compose-init.bash nobench
+```
+
+On CentOS 7:
+```
+yum remove docker docker-client docker-client-latest docker-common docker-latest \
+   docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine
+
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum-config-manager --enable docker-ce-test
+
+yum install epel-release
+yum install -y python-pip
+pip install --upgrade pip
+
+yum install docker-ce mysql sysbench git jq
+rpm -ihv https://github.com/github/orchestrator/releases/download/v3.0.10/orchestrator-client-3.0.10-1.x86_64.rpm
+pip install docker-compose
+service docker start
+
+
+git clone https://github.com/renecannao/ProxySQL-Tutorial-PLSC2018.git
+cd ProxySQL-Tutorial-PLSC2018
+./docker-compose-init.bash nobench
+```
+
+
 In addition if you prefer not to use docker-compose you'll also find some scripts for launching the 
 MySQL and ProxySQL instances without docker-compose in the `legacy/` directory:
 - legacy/docker-mysql.bash
