@@ -13,7 +13,7 @@ mysql -h127.0.0.1 -P13306 -uroot -p$MYSQL_PWD <$(pwd)/conf/mysql/mysql1/perconal
 
 # ensure proxysql1 config
 printf "$POWDER_BLUE[$(date)] Configuring proxysql1...$LIME_YELLOW\n"
-mysql -h127.0.0.1 -P13306 -uroot -p$MYSQL_PWD <$(pwd)/conf/proxysql/config-local.sql > /dev/null 2>&1
+mysql -h127.0.0.1 -P16032 -uradmin -pradmin <$(pwd)/conf/proxysql/config.sql > /dev/null 2>&1
 
 printf "$POWDER_BLUE$BRIGHT[$(date)] MySQL Configuration COMPLETE!$NORMAL\n"
 
