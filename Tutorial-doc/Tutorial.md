@@ -80,4 +80,121 @@ mysql -uroot -proot -h 127.0.0.1 -P16043
 mysql -uroot -proot -h 127.0.0.1 -P16053
 ```
 
-## 
+## Enabling cluster
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+
+SHOW VARIABLES LIKE 'admin-cluster%';
+
+SET admin-cluster_username='radmin';
+SET admin-cluster_password='radmin';
+LOAD ADMIN VARIABLES TO RUNTIME;
+SAVE ADMIN VARIABLES TO DISK;
+
+SHOW CREATE TABLE proxysql_servers\G
+
+INSERT INTO proxysql_servers (hostname) VALUES ('proxysql1'),('proxysql2'),('proxysql3');
+LOAD PROXYSQL SERVERS TO RUNTIME;
+SAVE PROXYSQL SERVERS TO DISK;
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16042
+source conf/proxysql/enable_cluster.sql
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16052
+source conf/proxysql/enable_cluster.sql
+
+
+DELETE FROM mysql_servers;
+
+LOAD MYSQL SERVERS TO RUNTIME;
+SELECT * FROM mysql_servers;
+SELECT * FROM disk.mysql_servers;
+
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+SELECT * FROM mysql_servers;
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16052
+SELECT * FROM disk.mysql_servers;
+LOAD MYSQL SERVERS FROM DISK;
+LOAD MYSQL SERVERS TO RUNTIME;
+
+SELECT * FROM stats_proxysql_servers_metrics;
+SELECT * FROM stats_proxysql_servers_checksums;
+```
+
+## Rewrite queries
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+SELECT * FROM mysql_query_rules\G
+INSERT INTO mysql_query_rules (rule_id,active,match_digest,destination_hostgroup,apply) VALUES (1,1,'^SELECT.*FOR UPDATE',0,1),(2,1,'^SELECT',1,1);
+
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+```
+
+```
+mysql -uroot -proot -h127.0.0.1 -P16033
+
+source ./conf/mysql/mysql1/perconalive_schema.sql
+
+use perconalive
+SHOW TABLES;
+INSERT INTO customer VALUES (NULL, '987-65-4321');
+SELECT * FROM customer;
+
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+SELECT * FROM stats_mysql_query_rules;
+SELECT hostgroup, digest_text, count_star FROM stats_mysql_query_digest;
+
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,replace_pattern,destination_hostgroup,apply)
+          VALUES (3,1,'^select (.*)sensitive_number([ ,])(.*)',
+                "SELECT \1CONCAT(REPEAT('X',8),RIGHT(sensitive_number,4)) sensitive_number\2\3",0,1);
+
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+```
+
+```
+mysql -uroot -proot -h127.0.0.1 -P16033
+use perconalive
+SELECT id, sensitive_number FROM customer;
+```
+
+```
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+SELECT * FROM mysql_query_rules\G
+
+
+UPDATE mysql_query_rules SET active=0 WHERE rule_id=2;
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+```
+
+```
+mysql -uroot -proot -h127.0.0.1 -P16033
+use perconalive
+SELECT id, sensitive_number FROM customer;
+```
+
+## Mirror queries
+
+
+## MySQL failover with Orchestrator
+
+
