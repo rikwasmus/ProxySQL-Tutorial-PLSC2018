@@ -197,4 +197,24 @@ SELECT id, sensitive_number FROM customer;
 
 ## MySQL failover with Orchestrator
 
+```
+export ORCHESTRATOR_API="http://localhost:23101/api http://localhost:23102/api http://localhost:23103/api"
+
+orchestrator-client -c topology -a $(orchestrator-client -c clusters)
+
+orchestrator-client -c set-read-only -i mysql1
+
+# try to read from sql interface: mysql -uroot -proot -h127.0.0.1 -P16033
+
+orchestrator-client -c set-writeable -i mysql1
+
+```
+
+```
+docker-compose stop mysql1
+
+mysql -uradmin -pradmin -h127.0.0.1 -P16032
+SELECT * FROM runtime_mysql_servers;
+```
+
 
