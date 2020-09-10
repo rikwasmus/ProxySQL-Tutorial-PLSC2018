@@ -131,6 +131,11 @@ SELECT * FROM stats_proxysql_servers_metrics;
 SELECT * FROM stats_proxysql_servers_checksums;
 ```
 
+* Set a server to offline soft while it has connections, show output of SELECT @@hostname;
+* Set a server to offline hard while it has connections, show output ot SELECT @@hostname;
+
+
+
 ## Rewrite queries
 
 ```
@@ -191,6 +196,9 @@ mysql -uroot -proot -h127.0.0.1 -P16033
 use perconalive
 SELECT id, sensitive_number FROM customer;
 ```
+
+Assignment:
+* Check digests from stats_mysql_query_digest, and create a query rule affecting all queries of a certain type for generic dynamic parameters, without using a regex.
 
 ## Mirror queries
 
